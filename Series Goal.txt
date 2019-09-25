@@ -1,0 +1,63 @@
+Full List of sections and feature we will build durng the seruies of the tut
+
+* MOdular Administration Area
+* CPT MAnager
+* Custom Taxonomy Manager
+* Widget to Uplaod and dsiplay media in siderbar
+* Post and pages Gallery Intergration
+* testimonials section; comment in the front end, Admin cna approve comment , select which comment to display
+* custom template section
+* ajax based login /Register system
+* Membership protected area
+* Chat system
+
+
+
+• Order cut off time: Every Wednesday before 12:00
+  1. Workings days and working time
+  2.
+
+
+• Delivery: Every Friday
+• Exclude Weekends, public holidays
+• Check possibility to add any unplanned events (e.g. Cyclones)
+• To consider Next Day Delivery – Within 24 Hours for Rs 250
+• To add the expected delivery date in the mail confirmation for the customer
+
+
+
+
+
+
+workflow
+
+case
+ normal (no next day delivery)
+if( orderdate <= closing_date_f){//on the case wednesday
+   if (orderTime < Cutoff time_f){
+
+
+          Get Next Shipping Day(s) //Check for holidays
+          And Display
+
+   }
+
+   else(orderTime > Cutoff time_f)
+
+   {
+
+
+           Get Next+ 1 Shipping Day(s)
+           And Display
+
+   }
+}
+
+field needed:
+1. closing_date_f (Multiple) + assiocative Cutoff time
+2. Shipping Day(s)
+3.
+
+
+
+

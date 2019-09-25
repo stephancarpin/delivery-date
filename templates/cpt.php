@@ -1,0 +1,1 @@
+<H1>Custom Post Types Template file</H1>

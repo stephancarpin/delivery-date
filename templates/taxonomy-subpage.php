@@ -1,0 +1,1 @@
+<H1>Taxonomy Template file</H1>
