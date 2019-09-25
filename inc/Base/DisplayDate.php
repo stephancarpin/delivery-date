@@ -62,39 +62,22 @@ class DisplayDate extends BaseController
 
              if ($nowdate < $nddcheckdateTime )
              {
+                 //find next avaible 1 day
+                 //$nowdate->modify('tomorrow');
 
-                 $nowdate->modify('tomorrow');
+
+                 $display_date = self::findAvailableDate($nowdate,1);
 
              } else {
 
-                 $nowdate->modify('2 day');
+                 //$nowdate->modify('2 day');
+                 $display_date =  self::findAvailableDate($nowdate,2);
              }
 
 
+            return date_format($display_date,'d-m-Y');
 
 
-            $this->p(date_format($nowdate,"d-m-Y h:m:s"));
-            $this->p(date('l',strtotime(date_format($nowdate,"d-m-Y h:m:s"))));
-
-
-            $addtional_holiday     = self::checkforholiday($nowdate);
-            $nowdate->modify( $addtional_holiday .' day' );
-
-
-            $this->p(date_format($nowdate,"d-m-Y h:m:s"));
-            $this->p(date('l',strtotime(date_format($nowdate,"d-m-Y h:m:s"))));
-
-            $get_day_name          = date( 'l',strtotime(date_format($nowdate,"d-m-Y")));
-            $addtional_weekend_day = self::checkIfWeekendDay($get_day_name);
-
-
-            $nowdate->modify( $addtional_weekend_day .' day' );
-
-            $this->p(date_format($nowdate,"d-m-Y h:m:s"));
-            $this->p(date('l',strtotime(date_format($nowdate,"d-m-Y h:m:s"))));
-
-
-            return date_format($nowdate,"d-m-Y h:m:s");
 
 
         }
@@ -118,29 +101,76 @@ class DisplayDate extends BaseController
 
         }
 
+
+
+
+    }
+
+
+    /**
+     * Function to find available date (exlucing Holiday and Weekend)
+     *
+     * @param DateTime $nowday
+     * @param $num_of_days_needed
+     * @return DateTime
+     */
+    public function findAvailableDate(DateTime $nowday, $num_of_days_needed)
+    {
+        //find day avaible
+        $holiday_arr = $this->holiday_dates;
+        $temp_dates  = new DateTime();
+
+       for($i =1; $i < $num_of_days_needed+1; $i++)
+       {
+           $nowday->modify( '1 day' );
+
+
+           $this_day = ((date_format($nowday,"d-m-Y")));
+
+
+           if (in_array($this_day,$holiday_arr))
+           {
+
+               $i--;
+
+
+           } else {
+
+               if(!self::checkIfWeekendDay($nowday))
+               {
+                   $temp_dates = $nowday;
+               } else {
+
+                   $i--;
+
+               }
+           }
+
+       }
+
+        return $temp_dates;
+
     }
 
 
 
 
-    public function checkIfWeekendDay ($day_name)
+    public function checkIfWeekendDay (DateTime $date)
     {
-        $additional_days = 0;
-
-        switch($day_name){
+        $get_day_name = date( 'l',strtotime(date_format($date,"d-m-Y")));
+        switch($get_day_name){
 
             case 'Saturday':
-                $additional_days += 2;
+                return true;
                 break;
             case 'Sunday':
-                $additional_days += 1;
+                return true;
                 break;
 
         }
 
-        return $additional_days;
+        return false;
     }
-
     public function checkforholiday(DateTime $finaldate)
     {
         $nowdate     = new DateTime();
@@ -176,7 +206,6 @@ class DisplayDate extends BaseController
 
 
     }
-
     public function getShippingMethodsNDD()
     {
 
@@ -216,9 +245,7 @@ class DisplayDate extends BaseController
 
         return $item_data;
     }
-
-
-    public  function p($value)
+    public function p($value)
     {
         echo '<pre>';
         print_r($value);
