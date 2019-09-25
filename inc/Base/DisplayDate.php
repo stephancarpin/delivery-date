@@ -13,6 +13,8 @@ class DisplayDate extends BaseController
 
     public function register()
     {
+        //Todo:add filter for email and Checkout
+        //Todo: Check Server date and time
 
        // add_filter( 'woocommerce_get_item_data', array($this,'display_delivery_date_in_cart'), 10, 2 );
         add_action( 'woocommerce_cart_totals_after_shipping', array($this,'action_woocommerce_cart_totals_after_shipping'), 25, 0 );
@@ -20,19 +22,25 @@ class DisplayDate extends BaseController
 
     }
 
+    /**
+     * filter to display date in cart total
+     */
     public function action_woocommerce_cart_totals_after_shipping( ) {
 
 
-        echo "<tr>
-                <th>Estimated Delivery Date</th>
-                <td style='font-weight: bolder'>" . self::calculateDeliveryDate() ."</td>
-              </tr>" ;
+        $html = "<tr>
+                   <th>Estimated Delivery Date</th>
+                   <td style='font-weight: bolder'>" . self::calculateDeliveryDate() ."</td>
+                 </tr>" ;
+
+        echo $html;
 
     }
 
 
-
-
+    /**
+     * Get data from Delivery Date Plugin
+     */
     private function getDataFromPlugin(){
 
         settings_fields('delivery_options_group');
@@ -45,12 +53,14 @@ class DisplayDate extends BaseController
 
     }
 
-
+    /**
+     * @return false|string
+     */
     private function calculateDeliveryDate()
     {
         self::getDataFromPlugin();
 
-        $now_date            = new DateTime();
+        $now_date           = new DateTime();
         $check_dateTime     = new DateTime();
         $nddcheckdateTime   = new DateTime();
 
@@ -104,6 +114,8 @@ class DisplayDate extends BaseController
             }
 
         }
+
+        return "Shipping Method Not found";
 
 
 
@@ -159,13 +171,12 @@ class DisplayDate extends BaseController
 
     /**
      * Function to find available Friday  date (exlucing Holiday )
-     * @param DateTime $nowday
+     * @param DateTime $now_day
      * @param $this_week
      * @return DateTime
      */
-    private function findAvailableNormalDeliveryDay(DateTime $nowday,$normal_delivery_day,$this_week)
+    private function findAvailableNormalDeliveryDay(DateTime $now_day, $normal_delivery_day, $this_week)
     {
-        $temp_friday_day = new DateTime();
         $holiday_arr = $this->holiday_dates;
 
         //$this->p($normal_delivery_day);
@@ -173,30 +184,40 @@ class DisplayDate extends BaseController
         if ($this_week)
         {
 
-            $nowday->modify('next '. $normal_delivery_day);
+            $now_day->modify('next '. $normal_delivery_day);
 
         } else {
 
-            $nowday->modify('next '. $normal_delivery_day.' + 1 week');
+            $now_day->modify('next '. $normal_delivery_day.' + 1 week');
 
         }
 
-        for($i =1; $i < 24; $i++) {
+        for($i =1; $i < 24; $i++) {//maximum loop
 
-            $this_day = ((date_format($nowday,"d-m-Y")));
 
-            if (in_array($this_day,$holiday_arr)) {
+            $this_day = ((date_format($now_day,"d-m-Y")));
 
-                $nowday->modify('next friday');
+            if (in_array($this_day,$holiday_arr)) {//if NOrmal delivery dates fall on holiday  find next day (monday)
+
+                $now_day->modify('next day');
 
             } else {
 
-                $temp_friday_day = $nowday;
+                if(!self::checkIfWeekendDay($now_day))
+                {
+
+                    return $now_day;
+
+                } else {
+
+                    $now_day->modify('next day');
+
+                }
 
             }
         }
 
-        return $temp_friday_day;
+        return $now_day;
     }
 
 
@@ -240,7 +261,7 @@ class DisplayDate extends BaseController
         }
 
     }
-    public function get_shipping_name_by_id( $shipping_id ) {
+    public  function get_shipping_name_by_id( $shipping_id ) {
         $packages = WC()->shipping->get_packages();
 
         foreach ( $packages as $i => $package ) {

@@ -24,27 +24,36 @@ window.addEventListener("load",function()
      }
 
 
-
-
-
     var inputDates= document.getElementById('setDates');
     var split_dates = inputDates.value.split(",");
+
+    var date_array = split_dates;
+
+
+
+
+
 
     $('#datepicker_example').multiDatesPicker({
         dateFormat: 'dd-mm-yy',
         addDates: split_dates,
         onSelect:function(event){
-            var initialValues = inputDates.value;
 
-            if (initialValues === '')
-            {
-                inputDates.value = event;
+            if (date_array.indexOf(event) === -1){
+
+
+                date_array.push(event);
 
             } else {
 
-                inputDates.value = initialValues+','+ event ;
+                var index = date_array.indexOf(event);
+
+                date_array.splice(index,1);
 
             }
+
+            inputDates.value = date_array;
+
         }
     });
 
