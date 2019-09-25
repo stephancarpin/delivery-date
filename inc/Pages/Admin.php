@@ -83,6 +83,10 @@ class Admin extends BaseController
         $args = array(
             array(
                 'option_group' => 'delivery_options_group',
+                'option_name'  => 'normal_delivery_day'
+            ),
+            array(
+                'option_group' => 'delivery_options_group',
                 'option_name'  => 'closing_day',
                 'callback'     => array($this->callbacks,'deliveryDateOptionsGroup')
             ),
@@ -97,11 +101,9 @@ class Admin extends BaseController
                 'option_group' => 'delivery_options_group',
                 'option_name'  => 'holiday_dates',
                 'callback'     => array($this->callbacks,'HolidayOptionsGroup')
-
-
-
-
             )
+
+
         );
 
         $this->settings->setSettings($args);
@@ -136,6 +138,17 @@ class Admin extends BaseController
     public function setFields()
     {
         $args = array(
+            array(
+                'id'           => 'normal_delivery_day',//use setting
+                'title'        => 'Normal Delivery Day',
+                'callback'     => array($this->callbacks,'NormalDeliveryDayCallback'),
+                'page'         => 'deliverydate_plugin',
+                'section'      => 'delivery_admin_index',
+                'args'         => array(
+                    'label_for' => 'normal_delivery_day',
+                    'class' => 'normal-delivery-day-class'
+                )
+            ),
             array(
                 'id'           => 'closing_day',//use setting
                 'title'        => 'Closing day',

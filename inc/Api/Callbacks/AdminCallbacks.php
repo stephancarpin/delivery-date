@@ -54,6 +54,34 @@ class AdminCallbacks extends BaseController
         echo   '<input type="time" name="cut_off_time" value= "'.$value .'">';
     }
 
+
+
+    public function NormalDeliveryDayCallback()
+    {
+        $value = esc_attr(get_option('normal_delivery_day'));
+
+
+        $option_days = ["Monday","Tuesday","wednesday","Thursday","Friday","Saturday","Sunday"];
+
+        echo '<select name="normal_delivery_day"  value="'. $value .'">';
+
+
+        foreach ($option_days as $day)
+        {
+            $selected = '';
+
+            if($value == $day)
+            {
+                $selected= 'Selected';
+            }
+            echo '<option  value="'.$day.'" ' . $selected . '>'. $day . '</option>';
+
+        }
+        echo  '</select>';
+
+
+    }
+
     public function closingDayCallback()
     {
         /**
@@ -88,13 +116,7 @@ class AdminCallbacks extends BaseController
 
     public function HolidayOptionsGroup($input)
     {
-        //jason ecode dates
 
-//        $string = $input;
-//        $str_arr = explode (",", $string);
-
-
-      //  return json_encode($str_arr,true);
         return $input;
 
     }
