@@ -15,8 +15,8 @@ class Enqueue extends BaseController
 
         wp_enqueue_style('mypluginstyle',$this->plugin_url . 'assets/mycss.css');
 
-        wp_enqueue_script('mypluginjquery','https://code.jquery.com/jquery-2.2.4.min.js');
-        wp_enqueue_script('mypluginjqueryui','https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js');
+       // wp_enqueue_script('mypluginjquery','https://code.jquery.com/jquery-2.2.4.min.js');
+       // wp_enqueue_script('mypluginjqueryui','https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js');
 
         wp_enqueue_style('mycalendarstyle',$this->plugin_url . 'assets/muldatepicker/jquery-ui.multidatespicker.css');
         wp_enqueue_script('mycalendarscript',$this->plugin_url .'assets/muldatepicker/jquery-ui.multidatespicker.js');

@@ -61,8 +61,13 @@ class DisplayDate extends BaseController
         self::getDataFromPlugin();
 
         $now_date           = new DateTime();
-        $check_dateTime     = new DateTime();
         $nddcheckdateTime   = new DateTime();
+        //for debugging date
+      //  $now_date->modify(' wednesday 14:01:00.000000'  );
+        // $now_date->setTime(23, 00);;
+
+        $timestampnow =$now_date->getTimestamp();
+
 
 
         if (self::getShippingMethodsNDD()) {//check for next day delivery
@@ -87,18 +92,38 @@ class DisplayDate extends BaseController
 
             return date_format($display_date,'d-m-Y');
 
-
-
-
         }
 
 
-        if (!self::getShippingMethodsNDD()) {//Not next day
+        if (!self::getShippingMethodsNDD()) {//Not next day Delivery
 
-            $check_dateTime->modify($this->closing_day . ' ' .$this->cut_off_time );
 
-            if ($now_date < $check_dateTime ) {
 
+            if(self::checkIfWeekendDay($now_date))
+            {
+
+                $now_date->modify('tuesday');
+
+            }
+
+
+
+            $check_dateTime  = self::findNearestDayOfWeek($now_date,$this->closing_day);
+
+
+            $check_dateTime->modify( $this->cut_off_time );
+
+
+            $check_dateTimeStamp = $check_dateTime->getTimestamp();
+
+
+            /**
+             * Enable for debug
+             */
+           // $this->p($now_date);
+           // $this->p($check_dateTime);
+
+            if ( $timestampnow < $check_dateTimeStamp) {
 
                 $display_date =  self::findAvailableNormalDeliveryDay($now_date,$this->normal_delivery_day,true);
 
@@ -113,12 +138,10 @@ class DisplayDate extends BaseController
                 return  date_format($display_date,"d-m-Y")  ;
             }
 
+
         }
 
         return "Shipping Method Not found";
-
-
-
 
     }
 
@@ -170,16 +193,15 @@ class DisplayDate extends BaseController
     }
 
     /**
-     * Function to find available Friday  date (exlucing Holiday )
+     * Function to find available Friday  date (exlucding Holiday )
      * @param DateTime $now_day
+     * @param $normal_delivery_day
      * @param $this_week
      * @return DateTime
      */
     private function findAvailableNormalDeliveryDay(DateTime $now_day, $normal_delivery_day, $this_week)
     {
         $holiday_arr = $this->holiday_dates;
-
-        //$this->p($normal_delivery_day);
 
         if ($this_week)
         {
@@ -188,9 +210,11 @@ class DisplayDate extends BaseController
 
         } else {
 
-            $now_day->modify('next '. $normal_delivery_day.' + 1 week');
+            $now_day->modify('next '. 'monday'  );//restart week day
+            $now_day->modify('next '. $normal_delivery_day   );
 
         }
+
 
         for($i =1; $i < 24; $i++) {//maximum loop
 
@@ -278,23 +302,65 @@ class DisplayDate extends BaseController
     public function p($value)
     {
         echo '<pre>';
-        print_r($value);
+        var_dump($value);
         echo '</pre>';
 
     }
 
+    /**
+     * findNearestDayOfWeek
+     *
+     * @param DateTime $date
+     * @param $dayOfWeek
+     * @return DateTime
+     */
+    public function findNearestDayOfWeek(DateTime $date, $dayOfWeek)
+    {
+        $dayOfWeek = ucfirst($dayOfWeek);
+        $daysOfWeek = array(
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday',
+            'Sunday',
+        );
+
+
+        if(!in_array($dayOfWeek, $daysOfWeek)){
+
+            throw new \InvalidArgumentException('Invalid day of week:'.$dayOfWeek);
+        }
+
+        if($date->format('l') == $dayOfWeek){
+
+            return $date;
+        }
+
+        $previous = clone $date;
+        $previous->modify('last '.$dayOfWeek);
+
+        $next = clone $date;
+        $next->modify('next '.$dayOfWeek);
+
+        $previousDiff = $date->diff($previous);
+        $nextDiff     = $date->diff($next);
+
+        $previousDiffDays = $previousDiff->format('%a');
+        $nextDiffDays     = $nextDiff->format('%a');
+
+        if($previousDiffDays < $nextDiffDays){
 
 
 
 
+            return $previous;
+        }
 
 
-
-
-
-
-
-
+        return $next;
+    }
 
 
 }

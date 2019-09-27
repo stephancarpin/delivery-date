@@ -63,15 +63,7 @@ class Admin extends BaseController
                 ,'callback'   =>array($this->callbacks,'cptSubpage')//wordpress require array
 
             ],
-            [
-                'parent_slug' => 'deliverydate_plugin'
-                ,'page_title' => 'Custom taxonomy'
-                ,'menu_title' => 'Taxononmies'
-                ,'capability' => 'manage_options'
-                ,'menu_slug'  => 'delivery_taxonomies'
-                ,'callback'   =>array($this->callbacks,'taxonomySubpage')
 
-            ]
         ];
 
 

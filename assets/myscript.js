@@ -29,11 +29,6 @@ window.addEventListener("load",function()
 
     var date_array = split_dates;
 
-
-
-
-
-
     $('#datepicker_example').multiDatesPicker({
         dateFormat: 'dd-mm-yy',
         addDates: split_dates,

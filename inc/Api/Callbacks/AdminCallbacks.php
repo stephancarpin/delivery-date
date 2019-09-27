@@ -30,14 +30,16 @@ class AdminCallbacks extends BaseController
 
     public function  deliveryDateAdminSection()
     {
-        echo 'Section for closing day and corresponding Cut off time  ';
+
+        echo '<hr>';
     }
 
     public function  holidayAdminSection()
     {
-        echo 'Please Select Holiday Dates';
-//        echo '<div style="width: 50%" id="demo-multi-day"></div>';
-      echo  ' <div id="datepicker_example"></div>';
+        echo '<hr>';
+        echo '<p>Please Select Holiday Dates</p>';
+        echo '<div id="datepicker_example"></div>';
+        echo '<hr>';
     }
 
     public function deliveryDateTextExample()
@@ -51,7 +53,7 @@ class AdminCallbacks extends BaseController
         $value = esc_attr(get_option('cut_off_time'));
        // echo '<input type="text" class="regular-text" name="cut_off_time" value="'. $value .'" placeholder = "Write you first here" >';
 
-        echo   '<input type="time" name="cut_off_time" value= "'.$value .'">';
+        echo   '<input type="time" name="cut_off_time" value= "'.$value .'"><span style="font-style: italic"> (Use as cut off time for days of the week too)</span>';
     }
 
 
@@ -125,11 +127,16 @@ class AdminCallbacks extends BaseController
     public function HolidayDatesCallback()
     {
         $value = esc_attr(get_option('holiday_dates'));
-        echo '<input  id="setDates" type="text" class="regular-text" name="holiday_dates" value="'. $value .'" placeholder = "Write you first here" >';
-        $value_arr = explode(',',$value);
-       // var_dump($value_arr);
+
+        echo '<input hidden id="setDates" type="text" class="regular-text" name="holiday_dates" value="'. $value .'"                        placeholder = "Select holiday dates" >';
+
+
+
+        $value_arr   = explode(',',$value);
         $break_after = 3;
-        echo '<div style="max-height: 60px">';
+
+        echo '<div>';
+
         $counter = 0;
         foreach ($value_arr as $item) {
             if ($counter % $break_after == 0) {
@@ -141,14 +148,14 @@ class AdminCallbacks extends BaseController
                 echo '</ul>';
             }
             ++$counter;
-
         }
 
         if ((($counter-1) % $break_after) != ($break_after-1)) {
             echo '</ul>';
-
         }
-        echo '</dvi>';
+        echo '</div>';
+
+
 
 
 
