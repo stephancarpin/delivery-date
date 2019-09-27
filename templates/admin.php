@@ -28,6 +28,8 @@
 
         <div id="tab-3" class="tab-pane " >
             <h3>About</h3>
+            <h5>Custom Delivery Date(Estimation) plugin </h5>
+            <div class="">
             <ul>
                 <li>Delivery Only on Normal Delivery Day</li>
                 <li>Except if holiday then next available day of next week</li>
@@ -36,6 +38,7 @@
                 <li>Next day delivery depend on shipping method (Next Day Delivery). Shipping method must exist</li>
                 <li>Next day delivery: excluding weekend and holidays</li>
             </ul>
+            </div>
         </div>
     </div>
 </div>

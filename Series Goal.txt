@@ -1,15 +1,4 @@
-Full List of sections and feature we will build durng the seruies of the tut
-
-* MOdular Administration Area
-* CPT MAnager
-* Custom Taxonomy Manager
-* Widget to Uplaod and dsiplay media in siderbar
-* Post and pages Gallery Intergration
-* testimonials section; comment in the front end, Admin cna approve comment , select which comment to display
-* custom template section
-* ajax based login /Register system
-* Membership protected area
-* Chat system
+case Study
 
 
 
