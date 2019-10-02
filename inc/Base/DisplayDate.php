@@ -18,6 +18,11 @@ class DisplayDate extends BaseController
 
        // add_filter( 'woocommerce_get_item_data', array($this,'display_delivery_date_in_cart'), 10, 2 );
         add_action( 'woocommerce_cart_totals_after_shipping', array($this,'action_woocommerce_cart_totals_after_shipping'), 25, 0 );
+        add_action( 'woocommerce_review_order_before_shipping', array($this,'action_woocommerce_cart_totals_after_shipping'), 25, 0 );
+        add_action( 'woocommerce_email_header', array($this,'action_woocommerce_email'), 10, 0 );
+
+        add_filter('woocommerce_thankyou_order_received_text',  array($this,'woo_change_order_received_text'), 10, 2 );
+
 
 
     }
@@ -35,6 +40,23 @@ class DisplayDate extends BaseController
 
         echo $html;
 
+    }
+
+    public function action_woocommerce_email( ) {
+
+        $html = "<div style='text-align: center;padding-top: 10px;padding-bottom: 10px'><h4 style='font-weight: bolder'>Estimated Delivery Date:  " . self::calculateDeliveryDate() ."</h4></div>" ;
+
+
+        echo $html;
+
+    }
+
+    function woo_change_order_received_text( $str, $order ) {
+
+        $html = "<div style='text-align: center;padding-top: 10px;padding-bottom: 10px'><h4 style='font-weight: bolder'>Estimated Delivery Date:  " . self::calculateDeliveryDate() ."</h4></div>" ;
+
+       // $new_str = 'We have emailed the purchase receipt to you. Please make sure to fill <a href="http://localhost:8888/some-form.pdf">this form</a> before attending the event';
+        return $str .$html;
     }
 
 
@@ -66,7 +88,7 @@ class DisplayDate extends BaseController
       //  $now_date->modify(' wednesday 14:01:00.000000'  );
         // $now_date->setTime(23, 00);;
 
-        $timestampnow =$now_date->getTimestamp();
+        $timestamp_now =$now_date->getTimestamp();
 
 
 
@@ -123,7 +145,7 @@ class DisplayDate extends BaseController
            // $this->p($now_date);
            // $this->p($check_dateTime);
 
-            if ( $timestampnow < $check_dateTimeStamp) {
+            if ( $timestamp_now < $check_dateTimeStamp) {
 
                 $display_date =  self::findAvailableNormalDeliveryDay($now_date,$this->normal_delivery_day,true);
 
