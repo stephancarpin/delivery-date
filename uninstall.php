@@ -27,9 +27,10 @@ foreach( $books as $book ) {
 */
 
 //Access the db via sql
-global $wpdb;
+//global $wpdb;
 
-$wpdb->query("DELETE FROM wp_posts WHERE post_type= 'book'");//always use double quote
+//$wpdb->query("DELETE FROM {$wpdb->prefix}_posts WHERE post_type= 'book'");//always use double quote
 //if post_type using custom taxonomy
-$wpdb->query("DELETE FROM wp_postmeta WEHRE post_id NOT IN (SELECT id FROM wp_posts");
-$wpdb->query("DELETE FROM wp_term_retaionships WEHRE object_id NOT IN (SELECT id FROM wp_posts");
+//$wpdb->query("DELETE FROM {$wpdb->prefix}_postmeta WEHRE post_id NOT IN (SELECT id FROM wp_posts");
+//$wpdb->query("DELETE FROM {$wpdb->prefix}_term_retaionships WEHRE object_id NOT IN (SELECT id FROM wp_posts");
+
