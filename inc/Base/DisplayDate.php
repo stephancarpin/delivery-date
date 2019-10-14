@@ -374,12 +374,8 @@ class DisplayDate extends BaseController
 
         if($previousDiffDays < $nextDiffDays){
 
-
-
-
             return $previous;
         }
-
 
         return $next;
     }
