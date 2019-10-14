@@ -154,15 +154,5 @@ class AdminCallbacks extends BaseController
             echo '</ul>';
         }
         echo '</div>';
-
-
-
-
-
     }
-
-
-
-
-
 }
