@@ -128,6 +128,8 @@ class DisplayDate extends BaseController
 
             }
 
+            //TODO:add situation where customer add to cart on a holiday date(should take next day available)
+
 
 
             $check_dateTime  = self::findNearestDayOfWeek($now_date,$this->closing_day);
@@ -215,7 +217,7 @@ class DisplayDate extends BaseController
     }
 
     /**
-     * Function to find available Friday  date (exlucding Holiday )
+     * Function to find available Friday(delivery day in plugin)  date (exlucding Holiday )
      * @param DateTime $now_day
      * @param $normal_delivery_day
      * @param $this_week
@@ -262,6 +264,8 @@ class DisplayDate extends BaseController
 
             }
         }
+
+        //TODO:add validation if greater than 24
 
         return $now_day;
     }
