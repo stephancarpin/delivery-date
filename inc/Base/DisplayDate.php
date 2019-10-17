@@ -124,7 +124,7 @@ class DisplayDate extends BaseController
             if(self::checkIfWeekendDay($now_date))
             {
 
-                $now_date->modify('tuesday');
+                $now_date->modify('monday');//reinitialise day of the week
 
             }
 
