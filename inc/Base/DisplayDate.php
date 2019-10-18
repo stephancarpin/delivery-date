@@ -13,7 +13,6 @@ class DisplayDate extends BaseController
 
     public function register()
     {
-        //Todo:add filter for email and Checkout
         //Todo: Check Server date and time
 
        // add_filter( 'woocommerce_get_item_data', array($this,'display_delivery_date_in_cart'), 10, 2 );
@@ -22,8 +21,6 @@ class DisplayDate extends BaseController
         add_action( 'woocommerce_email_header', array($this,'action_woocommerce_email'), 10, 0 );
 
         add_filter('woocommerce_thankyou_order_received_text',  array($this,'woo_change_order_received_text'), 10, 2 );
-
-
 
     }
 
@@ -82,90 +79,20 @@ class DisplayDate extends BaseController
     {
         self::getDataFromPlugin();
 
-        $now_date           = new DateTime();
-        $nddcheckdateTime   = new DateTime();
-        //for debugging date
-      //  $now_date->modify(' wednesday 14:01:00.000000'  );
-        // $now_date->setTime(23, 00);;
+        switch(self::getShippingMethods()){
 
-        $timestamp_now =$now_date->getTimestamp();
-
-
-
-        if (self::getShippingMethodsNDD()) {//check for next day delivery
-
-            /**
-             * Check Cut off time for ndd
-             * check for sunday and saturday
-             */
-
-            $nddcheckdateTime->modify($this->cut_off_time );
-
-             if ($now_date < $nddcheckdateTime )
-             {
-
-                 $display_date = self::findAvailableDateNND($now_date,1);
-
-             } else {
-
-                 $display_date =  self::findAvailableDateNND($now_date,2);
-             }
-
-
-            return date_format($display_date,'d-m-Y');
+            case 'Free shipping':
+                return self::outputDeliveryDate('Free shipping') ;
+                break;
+            case 'Next Day Delivery':
+                return self::outputDeliveryDate('Next Day Delivery') ;
+                break;
+            case 'International Delivery*':
+                return self::outputDeliveryDate('International Delivery*');
+                break;
 
         }
-
-
-        if (!self::getShippingMethodsNDD()) {//Not next day Delivery
-
-
-
-            if(self::checkIfWeekendDay($now_date))
-            {
-
-                $now_date->modify('monday');//reinitialise day of the week
-
-            }
-
-            //TODO:add situation where customer add to cart on a holiday date(should take next day available)
-
-
-
-            $check_dateTime  = self::findNearestDayOfWeek($now_date,$this->closing_day);
-
-
-            $check_dateTime->modify( $this->cut_off_time );
-
-
-            $check_dateTimeStamp = $check_dateTime->getTimestamp();
-
-
-            /**
-             * Enable for debug
-             */
-           // $this->p($now_date);
-           // $this->p($check_dateTime);
-
-            if ( $timestamp_now < $check_dateTimeStamp) {
-
-                $display_date =  self::findAvailableNormalDeliveryDay($now_date,$this->normal_delivery_day,true);
-
-
-                return date_format($display_date,"d-m-Y")   ;
-
-
-            } else {
-
-                $display_date =  self::findAvailableNormalDeliveryDay($now_date,$this->normal_delivery_day,false);
-
-                return  date_format($display_date,"d-m-Y")  ;
-            }
-
-
-        }
-
-        return "Shipping Method Not found";
+        return "Shipping Method not found";
 
     }
 
@@ -297,18 +224,12 @@ class DisplayDate extends BaseController
      * Get Shipping method in cart
      * @return bool
      */
-    private function getShippingMethodsNDD()
+    private function getShippingMethods()
     {
 
         $Shipping_method_name = self::get_shipping_name_by_id( WC()->session->get( 'chosen_shipping_methods' )[0] );
-        if($Shipping_method_name === 'Next Day Delivery')
-        {
-            return true;
-
-        } else {
-
-            return false;
-        }
+        //self::p($Shipping_method_name);
+        return $Shipping_method_name;
 
     }
     public  function get_shipping_name_by_id( $shipping_id ) {
@@ -382,6 +303,103 @@ class DisplayDate extends BaseController
         }
 
         return $next;
+    }
+
+    private function outputDeliveryDate($shipping_method)
+    {
+        /**
+         * Free shipping (methods)
+         * Check Cut off time for ndd
+         * check for sunday and saturday
+         */
+
+        $now_date           = new DateTime();
+        $nddcheckdateTime   = new DateTime();
+
+        // for debugging date
+        // $now_date->modify(' wednesday 14:01:00.000000'  );
+        // $now_date->setTime(23, 00);;
+
+        $timestamp_now = $now_date->getTimestamp();
+
+
+        if ($shipping_method == 'Free shipping')
+        {
+
+            if(self::checkIfWeekendDay($now_date))
+            {
+
+                $now_date->modify('monday');//reinitialise day of the week
+
+            }
+
+            //TODO:add situation where customer add to cart on a holiday date(should take next day available)
+
+
+
+            $check_dateTime  = self::findNearestDayOfWeek($now_date,$this->closing_day);
+
+
+            $check_dateTime->modify( $this->cut_off_time );
+
+
+            $check_dateTimeStamp = $check_dateTime->getTimestamp();
+
+
+            /**
+             * Enable for debug
+             */
+            // $this->p($now_date);
+            // $this->p($check_dateTime);
+
+            if ( $timestamp_now < $check_dateTimeStamp) {
+
+                $display_date =  self::findAvailableNormalDeliveryDay($now_date,$this->normal_delivery_day,true);
+
+
+                return date_format($display_date,"d-m-Y")   ;
+
+
+            } else {
+
+                $display_date =  self::findAvailableNormalDeliveryDay($now_date,$this->normal_delivery_day,false);
+
+                return  date_format($display_date,"d-m-Y")  ;
+            }
+
+        }
+
+        /**
+         * Next day delivery
+         */
+
+        if ($shipping_method == 'Next Day Delivery')
+        {
+            $nddcheckdateTime->modify($this->cut_off_time );
+
+            if ($now_date < $nddcheckdateTime )
+            {
+
+                $display_date = self::findAvailableDateNND($now_date,1);
+
+            } else {
+
+                $display_date =  self::findAvailableDateNND($now_date,2);
+            }
+
+
+            return date_format($display_date,'d-m-Y');
+        }
+
+        /**
+         * International Delivery*
+         */
+
+
+        if ($shipping_method == 'International Delivery*')
+        {
+            return '1 week';
+        }
     }
 
 

@@ -38,6 +38,13 @@
                 <li>Next day delivery depend on shipping method (Next Day Delivery). Shipping method must exist</li>
                 <li>Next day delivery: excluding weekend and holidays</li>
             </ul>
+                <div>
+                <h3>Requirements for plugin to work</h3>
+                    <p>Should create shipping methods :</p>
+                    <p>Free shipping</p>
+                    <p>Next Day delivery</p>
+                    <p>International Delivery*</p>
+                </div>
             </div>
         </div>
     </div>
