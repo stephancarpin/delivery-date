@@ -81,14 +81,14 @@ class DisplayDate extends BaseController
 
         switch(self::getShippingMethods()){
 
-            case 'Free shipping':
-                return self::outputDeliveryDate('Free shipping') ;
+            case Enums::FREE_SHIPPING:
+                return self::outputDeliveryDate(Enums::FREE_SHIPPING) ;
                 break;
-            case 'Next Day Delivery':
-                return self::outputDeliveryDate('Next Day Delivery') ;
+            case Enums::NEXT_DAY_DELIVERY:
+                return self::outputDeliveryDate(Enums::NEXT_DAY_DELIVERY) ;
                 break;
-            case 'International Delivery*':
-                return self::outputDeliveryDate('International Delivery*');
+            case Enums::INTERNATIONAL_DELIVERY:
+                return self::outputDeliveryDate(Enums::INTERNATIONAL_DELIVERY);
                 break;
 
         }
@@ -323,7 +323,7 @@ class DisplayDate extends BaseController
         $timestamp_now = $now_date->getTimestamp();
 
 
-        if ($shipping_method == 'Free shipping')
+        if ($shipping_method == Enums::FREE_SHIPPING)
         {
 
             if(self::checkIfWeekendDay($now_date))
@@ -373,7 +373,7 @@ class DisplayDate extends BaseController
          * Next day delivery
          */
 
-        if ($shipping_method == 'Next Day Delivery')
+        if ($shipping_method == Enums::NEXT_DAY_DELIVERY)
         {
             $ndd_check_dateTime->modify($this->cut_off_time );
 
@@ -396,7 +396,7 @@ class DisplayDate extends BaseController
          */
 
 
-        if ($shipping_method == 'International Delivery*')
+        if ($shipping_method == Enums::INTERNATIONAL_DELIVERY)
         {
             return '1 week';
         }

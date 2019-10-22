@@ -13,7 +13,8 @@ final class Init// php will not have the ability to extends(protecting )
             Pages\Admin::class,
             Base\Enqueue::class,
             Base\SettingLinks::class,
-            Base\DisplayDate::class
+            Base\DisplayDate::class,
+            Base\Enums::class
         ];
     }
 
