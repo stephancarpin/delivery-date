@@ -100,11 +100,11 @@ class DisplayDate extends BaseController
     /**
      * Function to find available date (excluding Holiday and Weekend)
      *
-     * @param DateTime $nowday
+     * @param DateTime $now
      * @param $num_of_days_needed
      * @return DateTime
      */
-    private function findAvailableDateNND(DateTime $nowday, $num_of_days_needed)
+    private function findAvailableDateNND(DateTime $now, $num_of_days_needed)
     {
         //find day avaible
         $holiday_arr = $this->holiday_dates;
@@ -112,10 +112,10 @@ class DisplayDate extends BaseController
 
        for($i =1; $i < $num_of_days_needed+1; $i++)
        {
-           $nowday->modify( '1 day' );
+           $now->modify( '1 day' );
 
 
-           $this_day = ((date_format($nowday,"d-m-Y")));
+           $this_day = ((date_format($now,"d-m-Y")));
 
 
            if (in_array($this_day,$holiday_arr))
@@ -126,9 +126,9 @@ class DisplayDate extends BaseController
 
            } else {
 
-               if(!self::checkIfWeekendDay($nowday))
+               if(!self::checkIfWeekendDay($now))
                {
-                   $temp_dates = $nowday;
+                   $temp_dates = $now;
 
                } else {
 
@@ -145,24 +145,24 @@ class DisplayDate extends BaseController
 
     /**
      * Function to find available Friday(delivery day in plugin)  date (exlucding Holiday )
-     * @param DateTime $now_day
+     * @param DateTime $now
      * @param $normal_delivery_day
      * @param $this_week
      * @return DateTime
      */
-    private function findAvailableNormalDeliveryDay(DateTime $now_day, $normal_delivery_day, $this_week)
+    private function findAvailableNormalDeliveryDay(DateTime $now, $normal_delivery_day, $this_week)
     {
         $holiday_arr = $this->holiday_dates;
 
         if ($this_week)
         {
 
-            $now_day->modify('next '. $normal_delivery_day);
+            $now->modify('next '. $normal_delivery_day);
 
         } else {
 
-            $now_day->modify('next '. 'monday'  );//restart week day
-            $now_day->modify('next '. $normal_delivery_day   );
+            $now->modify('next '. 'monday'  );//restart week day
+            $now->modify('next '. $normal_delivery_day   );
 
         }
 
@@ -170,22 +170,22 @@ class DisplayDate extends BaseController
         for($i =1; $i < 24; $i++) {//maximum loop
 
 
-            $this_day = ((date_format($now_day,"d-m-Y")));
+            $this_day = ((date_format($now,"d-m-Y")));
 
             if (in_array($this_day,$holiday_arr)) {//if NOrmal delivery dates fall on holiday  find next day (monday)
 
-                $now_day->modify('next day');
+                $now->modify('next day');
 
             } else {
 
-                if(!self::checkIfWeekendDay($now_day))
+                if(!self::checkIfWeekendDay($now))
                 {
 
-                    return $now_day;
+                    return $now;
 
                 } else {
 
-                    $now_day->modify('next day');
+                    $now->modify('next day');
 
                 }
 
@@ -194,12 +194,13 @@ class DisplayDate extends BaseController
 
         //TODO:add validation if greater than 24
 
-        return $now_day;
+        return $now;
     }
 
 
     /**
      * Check If weekend day
+     *
      * @param DateTime $date
      * @return bool
      */
@@ -305,6 +306,11 @@ class DisplayDate extends BaseController
         return $next;
     }
 
+    /**
+     * To output delivery date based on shipping Methods
+     * @param $shipping_method
+     * @return false|string
+     */
     private function outputDeliveryDate($shipping_method)
     {
         /**
@@ -313,7 +319,7 @@ class DisplayDate extends BaseController
          * check for sunday and saturday
          */
 
-        $now_date           = new DateTime();
+        $now_date             = new DateTime();
         $ndd_check_dateTime   = new DateTime();
 
         // for debugging date
