@@ -98,7 +98,7 @@ class DisplayDate extends BaseController
 
 
     /**
-     * Function to find available date (exlucing Holiday and Weekend)
+     * Function to find available date (excluding Holiday and Weekend)
      *
      * @param DateTime $nowday
      * @param $num_of_days_needed
@@ -314,7 +314,7 @@ class DisplayDate extends BaseController
          */
 
         $now_date           = new DateTime();
-        $nddcheckdateTime   = new DateTime();
+        $ndd_check_dateTime   = new DateTime();
 
         // for debugging date
         // $now_date->modify(' wednesday 14:01:00.000000'  );
@@ -375,9 +375,9 @@ class DisplayDate extends BaseController
 
         if ($shipping_method == 'Next Day Delivery')
         {
-            $nddcheckdateTime->modify($this->cut_off_time );
+            $ndd_check_dateTime->modify($this->cut_off_time );
 
-            if ($now_date < $nddcheckdateTime )
+            if ($now_date < $ndd_check_dateTime )
             {
 
                 $display_date = self::findAvailableDateNND($now_date,1);
@@ -400,6 +400,8 @@ class DisplayDate extends BaseController
         {
             return '1 week';
         }
+
+        return 'N/A';
     }
 
 

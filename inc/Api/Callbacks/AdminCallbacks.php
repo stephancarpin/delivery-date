@@ -53,7 +53,7 @@ class AdminCallbacks extends BaseController
         $value = esc_attr(get_option('cut_off_time'));
        // echo '<input type="text" class="regular-text" name="cut_off_time" value="'. $value .'" placeholder = "Write you first here" >';
 
-        echo   '<input type="time" name="cut_off_time" value= "'.$value .'"><span style="font-style: italic"> (Use as cut off time for days of the week too)</span>';
+        echo   '<input type="time" name="cut_off_time" value= "'.$value .'"><span style="font-style: italic"> (Use as cut off time for Next Day delivery too)</span>';
     }
 
 
@@ -114,7 +114,7 @@ class AdminCallbacks extends BaseController
 
 
 
-    //************HOliday Options Group
+    //Holiday Options Group
 
     public function HolidayOptionsGroup($input)
     {
