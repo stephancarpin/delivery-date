@@ -9,18 +9,33 @@ class DisplayDate extends BaseController
     private $cut_off_time ;
     private $holiday_dates ;
     private $normal_delivery_day ;
+    public $output;
+
 
 
     public function register()
     {
         //Todo: Check Server date and time
 
-       // add_filter( 'woocommerce_get_item_data', array($this,'display_delivery_date_in_cart'), 10, 2 );
-        add_action( 'woocommerce_cart_totals_after_shipping', array($this,'action_woocommerce_cart_totals_after_shipping'), 25, 0 );
+
+        add_action( 'woocommerce_cart_totals_after_shipping', array($this,'action_woocommerce_cart_totals_after_shipping'), 30, 0 );
         add_action( 'woocommerce_review_order_before_shipping', array($this,'action_woocommerce_cart_totals_after_shipping'), 25, 0 );
         add_action( 'woocommerce_email_header', array($this,'action_woocommerce_email'), 10, 0 );
-
         add_filter('woocommerce_thankyou_order_received_text',  array($this,'woo_change_order_received_text'), 10, 2 );
+
+
+
+    }
+
+    public function init()
+    {
+
+        settings_fields('delivery_options_group');
+        $this->closing_day      =  esc_attr(get_option('closing_day'));
+        $this->cut_off_time     =  esc_attr(get_option('cut_off_time'));
+        $this->normal_delivery_day     =  esc_attr(get_option('normal_delivery_day'));
+        $this->holiday_dates    =  explode(',', esc_attr(get_option('holiday_dates')));
+        $this->output            =   $this->calculate_delivery_date();
 
     }
 
@@ -29,10 +44,11 @@ class DisplayDate extends BaseController
      */
     public function action_woocommerce_cart_totals_after_shipping( ) {
 
+        $this->init();
 
         $html = "<tr>
                    <th>Estimated Delivery Date</th>
-                   <td style='font-weight: bolder'>" . self::calculateDeliveryDate() ."</td>
+                   <td style='font-weight: bolder'>" . $this->calculate_delivery_date() ."</td>
                  </tr>" ;
 
         echo $html;
@@ -41,54 +57,45 @@ class DisplayDate extends BaseController
 
     public function action_woocommerce_email( ) {
 
-        $html = "<div style='text-align: center;padding-top: 10px;padding-bottom: 10px'><h4 style='font-weight: bolder'>Estimated Delivery Date:  " . self::calculateDeliveryDate() ."</h4></div>" ;
+        $this->init();
+
+        $html = "<div style='text-align: center;padding-top: 10px;padding-bottom: 10px'>
+                      <h4 style='font-weight: bolder'>Estimated Delivery Date:  " .  $this->calculate_delivery_date()."</h4>
+                 </div>" ;
 
 
         echo $html;
 
     }
 
-    function woo_change_order_received_text( $str, $order ) {
+    public function woo_change_order_received_text( $str, $order ) {
 
-        $html = "<div style='text-align: center;padding-top: 10px;padding-bottom: 10px'><h4 style='font-weight: bolder'>Estimated Delivery Date:  " . self::calculateDeliveryDate() ."</h4></div>" ;
+        $this->init();
 
-       // $new_str = 'We have emailed the purchase receipt to you. Please make sure to fill <a href="http://localhost:8888/some-form.pdf">this form</a> before attending the event';
-        return $str .$html;
-    }
-
-
-    /**
-     * Get data from Delivery Date Plugin
-     */
-    private function getDataFromPlugin(){
-
-        settings_fields('delivery_options_group');
-
-        $this->closing_day      =  esc_attr(get_option('closing_day'));
-        $this->cut_off_time     =  esc_attr(get_option('cut_off_time'));
-        $this->normal_delivery_day     =  esc_attr(get_option('normal_delivery_day'));
-        $this->holiday_dates    =  explode(',', esc_attr(get_option('holiday_dates')));
+        $html = "<div style='text-align: center;padding-top: 10px;padding-bottom: 10px'>
+                     <h4 style='font-weight: bolder'>Estimated Delivery Date:  " .  $this->calculate_delivery_date()."</h4>
+                </div>" ;
 
 
+        return $str . $html;
     }
 
     /**
      * @return false|string
      */
-    private function calculateDeliveryDate()
+    private function calculate_delivery_date()
     {
-        self::getDataFromPlugin();
+        switch($this->get_shipping_methods()){
 
-        switch(self::getShippingMethods()){
 
             case Enums::FREE_SHIPPING:
-                return self::outputDeliveryDate(Enums::FREE_SHIPPING) ;
+                return $this->output_delivery_date(Enums::FREE_SHIPPING) ;
                 break;
             case Enums::NEXT_DAY_DELIVERY:
-                return self::outputDeliveryDate(Enums::NEXT_DAY_DELIVERY) ;
+                return $this->output_delivery_date(Enums::NEXT_DAY_DELIVERY) ;
                 break;
             case Enums::INTERNATIONAL_DELIVERY:
-                return self::outputDeliveryDate(Enums::INTERNATIONAL_DELIVERY);
+                return $this->output_delivery_date(Enums::INTERNATIONAL_DELIVERY);
                 break;
 
         }
@@ -104,7 +111,7 @@ class DisplayDate extends BaseController
      * @param $num_of_days_needed
      * @return DateTime
      */
-    private function findAvailableDateNND(DateTime $now, $num_of_days_needed)
+    private function find_available_date_NND(DateTime $now, $num_of_days_needed)
     {
         //find day avaible
         $holiday_arr = $this->holiday_dates;
@@ -126,7 +133,7 @@ class DisplayDate extends BaseController
 
            } else {
 
-               if(!self::checkIfWeekendDay($now))
+               if(!self::check_if_weekend_day($now))
                {
                    $temp_dates = $now;
 
@@ -150,7 +157,7 @@ class DisplayDate extends BaseController
      * @param $this_week
      * @return DateTime
      */
-    private function findAvailableNormalDeliveryDay(DateTime $now, $normal_delivery_day, $this_week)
+    private function find_available_normal_delivery_day(DateTime $now, $normal_delivery_day, $this_week)
     {
         $holiday_arr = $this->holiday_dates;
 
@@ -178,7 +185,7 @@ class DisplayDate extends BaseController
 
             } else {
 
-                if(!self::checkIfWeekendDay($now))
+                if(!$this->check_if_weekend_day($now))
                 {
 
                     return $now;
@@ -204,7 +211,7 @@ class DisplayDate extends BaseController
      * @param DateTime $date
      * @return bool
      */
-    private function checkIfWeekendDay (DateTime $date)
+    private function check_if_weekend_day (DateTime $date)
     {
         $get_day_name = date( 'l',strtotime(date_format($date,"d-m-Y")));
         switch($get_day_name){
@@ -222,14 +229,12 @@ class DisplayDate extends BaseController
     }
 
     /**
-     * Get Shipping method in cart
-     * @return bool
+     *
      */
-    private function getShippingMethods()
+    private function get_shipping_methods()
     {
-
-        $Shipping_method_name = self::get_shipping_name_by_id( WC()->session->get( 'chosen_shipping_methods' )[0] );
-        //self::p($Shipping_method_name);
+        $Shipping_method_name = $this->get_shipping_name_by_id( WC()->session->get( 'chosen_shipping_methods' )[0] );
+       // self::p($Shipping_method_name);
         return $Shipping_method_name;
 
     }
@@ -256,13 +261,13 @@ class DisplayDate extends BaseController
     }
 
     /**
-     * findNearestDayOfWeek
+     * find_Nearest_Day_Of_Week
      *
      * @param DateTime $date
      * @param $dayOfWeek
      * @return DateTime
      */
-    public function findNearestDayOfWeek(DateTime $date, $dayOfWeek)
+    public function find_nearest_day_of_week(DateTime $date, $dayOfWeek)
     {
         $dayOfWeek = ucfirst($dayOfWeek);
         $daysOfWeek = array(
@@ -311,7 +316,7 @@ class DisplayDate extends BaseController
      * @param $shipping_method
      * @return false|string
      */
-    private function outputDeliveryDate($shipping_method)
+    private function output_delivery_date($shipping_method)
     {
         /**
          * Free shipping (methods)
@@ -332,7 +337,7 @@ class DisplayDate extends BaseController
         if ($shipping_method == Enums::FREE_SHIPPING)
         {
 
-            if(self::checkIfWeekendDay($now_date))
+            if($this->check_if_weekend_day($now_date))
             {
 
                 $now_date->modify('monday');//reinitialise day of the week
@@ -343,7 +348,7 @@ class DisplayDate extends BaseController
 
 
 
-            $check_dateTime  = self::findNearestDayOfWeek($now_date,$this->closing_day);
+            $check_dateTime  = $this->find_nearest_day_of_week($now_date,$this->closing_day);
 
 
             $check_dateTime->modify( $this->cut_off_time );
@@ -360,7 +365,7 @@ class DisplayDate extends BaseController
 
             if ( $timestamp_now < $check_dateTimeStamp) {
 
-                $display_date =  self::findAvailableNormalDeliveryDay($now_date,$this->normal_delivery_day,true);
+                $display_date =  $this->find_available_normal_delivery_day($now_date,$this->normal_delivery_day,true);
 
 
                 return date_format($display_date,"d-m-Y")   ;
@@ -368,7 +373,7 @@ class DisplayDate extends BaseController
 
             } else {
 
-                $display_date =  self::findAvailableNormalDeliveryDay($now_date,$this->normal_delivery_day,false);
+                $display_date =  $this->find_available_normal_delivery_day($now_date,$this->normal_delivery_day,false);
 
                 return  date_format($display_date,"d-m-Y")  ;
             }
@@ -386,11 +391,11 @@ class DisplayDate extends BaseController
             if ($now_date < $ndd_check_dateTime )
             {
 
-                $display_date = self::findAvailableDateNND($now_date,1);
+                $display_date = $this->find_available_date_NND($now_date,1);
 
             } else {
 
-                $display_date =  self::findAvailableDateNND($now_date,2);
+                $display_date =  $this->find_available_date_NND($now_date,2);
             }
 
 
