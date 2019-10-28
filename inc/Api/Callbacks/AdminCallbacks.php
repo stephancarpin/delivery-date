@@ -113,12 +113,20 @@ class AdminCallbacks extends BaseController
     }
 
 
+    public function InternationalDeliveryDate()
+    {
+        $value = esc_attr(get_option('international_delivery_date'));
+
+        echo   '<input type="text" name="international_delivery_date" value= "'.$value .'"><span style="font-style: italic"> (message to display on cart etc)</span>';
+
+    }
+
+
 
     //Holiday Options Group
 
     public function HolidayOptionsGroup($input)
     {
-
 
         return $input;
 
@@ -140,7 +148,7 @@ class AdminCallbacks extends BaseController
         $counter = 0;
         foreach ($value_arr as $item) {
             if ($counter % $break_after == 0) {
-                echo '<ul>';
+                echo '<ul class="holiday-date">';
             }
             echo '<li>'.$item.'</li>';
 

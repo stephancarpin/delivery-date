@@ -9,6 +9,7 @@ class DisplayDate extends BaseController
     private $cut_off_time ;
     private $holiday_dates ;
     private $normal_delivery_day ;
+    private $international_message;
 
     public function register()
     {
@@ -70,12 +71,20 @@ class DisplayDate extends BaseController
      */
     public function init()
     {
+        try {
 
-        settings_fields('delivery_options_group');
-        $this->closing_day      =  esc_attr(get_option('closing_day'));
-        $this->cut_off_time     =  esc_attr(get_option('cut_off_time'));
-        $this->normal_delivery_day     =  esc_attr(get_option('normal_delivery_day'));
-        $this->holiday_dates    =  explode(',', esc_attr(get_option('holiday_dates')));
+            settings_fields('delivery_options_group');
+            $this->closing_day           =  esc_attr(get_option('closing_day'));
+            $this->cut_off_time          =  esc_attr(get_option('cut_off_time'));
+            $this->normal_delivery_day   =  esc_attr(get_option('normal_delivery_day'));
+            $this->holiday_dates         =  explode(',', esc_attr(get_option('holiday_dates')));
+            $this->international_message = explode(',', esc_attr(get_option('international_delivery_date')));
+
+        } catch(\Exception $error) {
+            write_log($error);
+        }
+
+
 
     }
 
@@ -263,8 +272,6 @@ class DisplayDate extends BaseController
             }
         }
 
-        //TODO:add validation if greater than 24
-
         return $now;
     }
 
@@ -326,7 +333,7 @@ class DisplayDate extends BaseController
 
         $packages = $woocommerce->session->shipping_for_package_0['rates'][$shipping_id]->label;
 
-        self::p($packages);
+       // self::p($packages);
         return $packages;
     }
 
@@ -487,7 +494,7 @@ class DisplayDate extends BaseController
 
         if ($shipping_method == Enums::INTERNATIONAL_DELIVERY)
         {
-            return '1 week';
+            return $this->international_message[0];
         }
 
         return 'N/A';

@@ -86,6 +86,10 @@ class Admin extends BaseController
                 'option_group' => 'delivery_options_group',
                 'option_name'  => 'cut_off_time'
             ),
+            array(
+                'option_group' => 'delivery_options_group',
+                'option_name'  => 'international_delivery_date'
+            ),
 
             //Holiday_option_group
 
@@ -161,6 +165,17 @@ class Admin extends BaseController
                 'args'         => array(
                        'label_for' => 'cut_off_time',
                        'class' => 'cut-off-class'
+                )
+            ),
+            array(
+                'id'           => 'international_delivery_date',//use setting
+                'title'        => 'International Delivery Date',
+                'callback'     => array($this->callbacks,'InternationalDeliveryDate'),
+                'page'         => 'deliverydate_plugin',
+                'section'      => 'delivery_admin_index',
+                'args'         => array(
+                    'label_for' => 'international_delivery_date',
+                    'class' => 'international-delivery-class'
                 )
             ),
 

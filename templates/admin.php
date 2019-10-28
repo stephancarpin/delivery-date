@@ -42,7 +42,7 @@
                 <h3>Requirements for plugin to work</h3>
                     <p>Should create shipping methods :</p>
                     <p>Free shipping</p>
-                    <p>Next Day delivery</p>
+                    <p>Next Day Delivery</p>
                     <p>International Delivery*</p>
                 </div>
             </div>
