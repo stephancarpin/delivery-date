@@ -1,11 +1,7 @@
 <div class="wrap">
     <h1>Dashboard For Delivery Date</h1>
     <?php settings_errors();?>
-    <?php
-    $d=strtotime("today");
 
-            echo date("d-m-Y h:i:sa", $d) . "<br>";
-    ?>
 
     <ul class="nav nav-tabs">
         <li class="active"><a href="#tab-1">Manage Settings</a></li>
@@ -15,6 +11,8 @@
         <div id="tab-1" class="tab-pane active" >
             <form method="post" action="options.php">
                 <?php
+                $now_date             = new DateTime();
+                echo  "<p><span style='font-weight: bolder'>Server DateTime: </span>" .date_format($now_date,"d-m-Y h:m:s") ."</p>";
 
                 settings_fields('delivery_options_group');
 
